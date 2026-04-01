@@ -26,6 +26,36 @@ def index():
     return send_from_directory("static", "index.html")
 
 
+@app.route("/privacy")
+def privacy():
+    return send_from_directory("static", "privacy.html")
+
+
+@app.route("/about")
+def about():
+    return send_from_directory("static", "about.html")
+
+
+@app.route("/dmca")
+def dmca():
+    return send_from_directory("static", "dmca.html")
+
+
+@app.route("/contact")
+def contact():
+    return send_from_directory("static", "contact.html")
+
+
+@app.route("/sitemap.xml")
+def sitemap():
+    return send_from_directory("static", "sitemap.xml", mimetype="application/xml")
+
+
+@app.route("/robots.txt")
+def robots():
+    return send_from_directory("static", "robots.txt", mimetype="text/plain")
+
+
 @app.route("/download", methods=["POST"])
 def download():
     data = request.get_json(silent=True)

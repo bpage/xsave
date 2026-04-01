@@ -269,9 +269,30 @@
     footer {
       margin-top: auto;
       padding-top: 48px;
-      color: var(--text-muted);
+      color: #444;
       font-size: 12px;
       text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .footer-links a {
+      color: #444;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover {
+      color: var(--text-muted);
+    }
+
+    .footer-links span {
+      color: #333;
     }
 
     /* ── Responsive ── */
@@ -347,7 +368,18 @@
   </div>
 
   <footer>
-    for personal use only &nbsp;·&nbsp; respects original content creators
+    <nav class="footer-links">
+      <a href="/">Home</a>
+      <span>·</span>
+      <a href="/privacy">Privacy</a>
+      <span>·</span>
+      <a href="/about">About</a>
+      <span>·</span>
+      <a href="/dmca">DMCA</a>
+      <span>·</span>
+      <a href="/contact">Contact</a>
+    </nav>
+    <p>for personal use only &nbsp;·&nbsp; respects original content creators</p>
   </footer>
 
   <script>

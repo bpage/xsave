@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — XSAVE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0a; --surface: #141414; --border: #2a2a2a;
+      --text: #f0f0f0; --text-muted: #888; --accent: #1d9bf0;
+    }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 15px; line-height: 1.7;
+      display: flex; flex-direction: column; align-items: center;
+      min-height: 100vh; padding: 48px 16px 80px;
+    }
+    header { text-align: center; margin-bottom: 48px; }
+    .logo {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 52px; letter-spacing: -1px; line-height: 1;
+      text-decoration: none;
+      background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; display: inline-block;
+    }
+    .logo span { -webkit-text-fill-color: var(--accent); }
+    .page-title {
+      font-size: 13px; color: var(--text-muted); margin-top: 6px;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .content {
+      width: 100%; max-width: 680px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 36px 32px;
+    }
+    h1 { font-size: 22px; font-weight: 500; margin-bottom: 24px; }
+    h2 { font-size: 14px; font-weight: 500; color: var(--text-muted);
+         text-transform: uppercase; letter-spacing: 0.8px;
+         margin-top: 28px; margin-bottom: 10px; }
+    p { color: #c8c8c8; margin-bottom: 14px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .email-block {
+      background: #1a1a1a; border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 18px;
+      font-size: 16px; font-weight: 500; color: var(--text);
+      margin: 20px 0;
+    }
+    footer {
+      margin-top: 48px; color: #444; font-size: 12px; text-align: center;
+    }
+    .footer-links {
+      display: flex; justify-content: center; gap: 8px;
+      flex-wrap: wrap; margin-bottom: 8px;
+    }
+    .footer-links a { color: #444; text-decoration: none; }
+    .footer-links a:hover { color: var(--text-muted); }
+    .footer-links span { color: #333; }
+    @media (max-width: 480px) {
+      body { padding: 32px 12px 64px; }
+      .content { padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="logo">X<span>SAVE</span></a>
+    <p class="page-title">Contact</p>
+  </header>
+
+  <div class="content">
+    <h1>Get in Touch</h1>
+
+    <h2>Email</h2>
+    <p>The best way to reach us is by email:</p>
+    <div class="email-block">
+      <!-- ADD YOUR CONTACT EMAIL HERE -->
+    </div>
+    <p>For general questions and feedback, we typically respond within 2–3 business days.</p>
+
+    <h2>DMCA &amp; copyright</h2>
+    <p>For copyright takedown requests, please use our <a href="/dmca">DMCA page</a> instead — it has the specific information we need to process your request quickly.</p>
+
+    <h2>Bug reports</h2>
+    <p>If a specific tweet URL isn't working, include the URL in your email (or paste it without the full link if you prefer). We can't guarantee support for every URL but we do look into reported issues.</p>
+  </div>
+
+  <footer>
+    <nav class="footer-links">
+      <a href="/">Home</a><span>·</span>
+      <a href="/privacy">Privacy</a><span>·</span>
+      <a href="/about">About</a><span>·</span>
+      <a href="/dmca">DMCA</a><span>·</span>
+      <a href="/contact">Contact</a>
+    </nav>
+    <p>© 2025 XSAVE &nbsp;·&nbsp; <!-- [YOURDOMAIN.COM] --></p>
+  </footer>
+
+</body>
+</html>
