@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-# Replace [YOURDOMAIN.COM] with your actual domain
-Sitemap: https://[YOURDOMAIN.COM]/sitemap.xml
+# Replace xsave.pics with your actual domain
+Sitemap: https://xsave.pics/sitemap.xml

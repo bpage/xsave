@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Replace [YOURDOMAIN.COM] with your actual domain -->
+  <!-- Replace xsave.pics with your actual domain -->
   <url>
-    <loc>https://[YOURDOMAIN.COM]/</loc>
+    <loc>https://xsave.pics/</loc>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://[YOURDOMAIN.COM]/about</loc>
+    <loc>https://xsave.pics/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://[YOURDOMAIN.COM]/privacy</loc>
+    <loc>https://xsave.pics/privacy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://[YOURDOMAIN.COM]/dmca</loc>
+    <loc>https://xsave.pics/dmca</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://[YOURDOMAIN.COM]/contact</loc>
+    <loc>https://xsave.pics/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
