@@ -248,16 +248,20 @@
       padding: 12px;
       cursor: pointer;
       text-align: center;
+      text-decoration: none;
       transition: background 0.15s, color 0.15s, opacity 0.15s;
     }
 
-    #save-btn:hover:not(:disabled) {
+    #save-btn:hover {
       background: rgba(0, 186, 124, 0.1);
     }
 
-    #save-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    #ios-tip {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+      min-height: 16px;
     }
 
     /* ── Ad slot ── */
@@ -360,7 +364,8 @@
           <div class="result-title" id="result-title"></div>
         </div>
       </div>
-      <button id="save-btn">↓ Save Video</button>
+      <a id="save-btn" href="#">↓ Save Video</a>
+      <p id="ios-tip"></p>
     </div>
   </div>
 
@@ -393,9 +398,12 @@
     const thumb    = document.getElementById('result-thumb');
     const titleEl  = document.getElementById('result-title');
     const saveBtn  = document.getElementById('save-btn');
+    const iosTip   = document.getElementById('ios-tip');
 
     let currentVideoUrl = null;
     let currentIsHls    = false;
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
     function setLoading(on) {
       btn.disabled = on;
@@ -412,6 +420,7 @@
     function clearState() {
       errorMsg.style.display = 'none';
       result.style.display = 'none';
+      iosTip.textContent = '';
     }
 
     async function handleDownload() {
@@ -448,8 +457,11 @@
         titleEl.textContent = data.title || 'Twitter Video';
         currentVideoUrl = data.url;
         currentIsHls    = !!data.hls;
+
+        // Point the anchor at our proxy so it works as a plain link too
+        const proxyUrl = '/proxy-download?url=' + encodeURIComponent(currentVideoUrl);
+        saveBtn.href = currentIsHls ? '#' : proxyUrl;
         saveBtn.textContent = '↓ Save Video';
-        saveBtn.disabled = false;
         result.style.display = 'block';
 
       } catch (err) {
@@ -459,31 +471,31 @@
       }
     }
 
-    // Direct mp4 download via blob (forces Save As dialog)
-    async function blobDownload(url) {
-      saveBtn.disabled = true;
-      saveBtn.textContent = 'Preparing download…';
-      try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('fetch failed');
-        const blob = await res.blob();
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'xsave-video.mp4';
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-      } catch {
-        // Blob fetch blocked (CORS on CDN) — open in new tab as fallback
-        window.open(url, '_blank', 'noopener');
-      } finally {
-        saveBtn.textContent = '↓ Save Video';
-        saveBtn.disabled = false;
-      }
-    }
+    saveBtn.addEventListener('click', (e) => {
+      if (!currentVideoUrl) { e.preventDefault(); return; }
 
-    // HLS → mp4 via server-side /convert, then stream to client
+      if (currentIsHls) {
+        // HLS: must go through /convert server-side
+        e.preventDefault();
+        hlsDownload(currentVideoUrl);
+        return;
+      }
+
+      // For direct mp4: use proxy route — works on Safari, Chrome, Brave, Firefox
+      // Let the anchor's href do the work (already set above), but on iOS show the tip
+      if (isIOS) {
+        e.preventDefault();
+        window.location.href = '/proxy-download?url=' + encodeURIComponent(currentVideoUrl);
+        // Show tap-and-hold tip after 2s if no download dialog appeared
+        setTimeout(() => {
+          iosTip.textContent = 'Tap and hold the button → Download Linked File';
+        }, 2000);
+      }
+      // Non-iOS: let the href navigate naturally — browser gets attachment headers
+    });
+
+    // HLS → mp4 via server-side /convert, stream to client
     async function hlsDownload(url) {
-      saveBtn.disabled = true;
       saveBtn.textContent = 'Converting… this may take a moment';
       try {
         const res = await fetch('/convert', {
@@ -506,18 +518,8 @@
         showError('Download failed. Try again.');
       } finally {
         saveBtn.textContent = '↓ Save Video';
-        saveBtn.disabled = false;
       }
     }
-
-    saveBtn.addEventListener('click', () => {
-      if (!currentVideoUrl) return;
-      if (currentIsHls) {
-        hlsDownload(currentVideoUrl);
-      } else {
-        blobDownload(currentVideoUrl);
-      }
-    });
 
     btn.addEventListener('click', handleDownload);
 

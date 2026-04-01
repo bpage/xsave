@@ -1,8 +1,9 @@
 import os
 import tempfile
 import threading
+import urllib.request
 import yt_dlp
-from flask import Flask, request, jsonify, send_from_directory, send_file
+from flask import Flask, request, jsonify, send_from_directory, send_file, Response, stream_with_context
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder="static")
@@ -183,6 +184,50 @@ def convert():
     # Clean up temp file after response is sent
     threading.Timer(60, remove_after_send, args=[tmp_path]).start()
     return response
+
+
+@app.route("/proxy-download")
+def proxy_download():
+    """Stream a video URL through the server so all browsers get a native download."""
+    video_url = request.args.get("url", "").strip()
+    if not video_url:
+        return "Missing url parameter", 400
+
+    # Basic sanity check — only allow http/https URLs
+    if not video_url.startswith(("http://", "https://")):
+        return "Invalid URL", 400
+
+    req = urllib.request.Request(video_url, headers={"User-Agent": UA})
+
+    try:
+        upstream = urllib.request.urlopen(req, timeout=30)
+    except Exception as e:
+        return f"Could not fetch video: {e}", 502
+
+    content_length = upstream.headers.get("Content-Length")
+
+    def generate():
+        try:
+            while True:
+                chunk = upstream.read(64 * 1024)
+                if not chunk:
+                    break
+                yield chunk
+        finally:
+            upstream.close()
+
+    headers = {
+        "Content-Type": "video/mp4",
+        "Content-Disposition": 'attachment; filename="xsave-video.mp4"',
+    }
+    if content_length:
+        headers["Content-Length"] = content_length
+
+    return Response(
+        stream_with_context(generate()),
+        status=200,
+        headers=headers,
+    )
 
 
 if __name__ == "__main__":
