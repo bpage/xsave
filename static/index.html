@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XSAVE — Twitter Video Downloader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface-2: #1c1c1c;
+      --border: #2a2a2a;
+      --border-focus: #444;
+      --text: #f0f0f0;
+      --text-muted: #888;
+      --accent: #1d9bf0;
+      --accent-hover: #1a8cd8;
+      --accent-active: #178bbf;
+      --error: #f4212e;
+      --success: #00ba7c;
+      --radius: 10px;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 48px 16px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: clamp(52px, 12vw, 80px);
+      letter-spacing: -1px;
+      color: var(--text);
+      line-height: 1;
+      /* subtle gradient shine */
+      background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo span {
+      color: var(--accent);
+      -webkit-text-fill-color: var(--accent);
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Card ── */
+    .card {
+      width: 100%;
+      max-width: 560px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 24px;
+    }
+
+    /* ── Input ── */
+    .input-wrap {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+
+    #url-input {
+      width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      padding: 13px 14px 13px 40px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    #url-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    #url-input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(29, 155, 240, 0.12);
+    }
+
+    /* ── Button ── */
+    #download-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 13px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s, opacity 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #download-btn:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    #download-btn:active:not(:disabled) {
+      background: var(--accent-active);
+      transform: scale(0.99);
+    }
+
+    #download-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    /* Loading pulse on button text */
+    #download-btn.loading .btn-text {
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.45; }
+    }
+
+    /* ── Error ── */
+    #error-msg {
+      display: none;
+      color: var(--error);
+      font-size: 13px;
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: rgba(244, 33, 46, 0.08);
+      border: 1px solid rgba(244, 33, 46, 0.2);
+      border-radius: 8px;
+    }
+
+    /* ── Result ── */
+    #result {
+      display: none;
+      margin-top: 20px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+
+    .result-inner {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .thumbnail-wrap {
+      flex-shrink: 0;
+      width: 100px;
+      height: 68px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+    }
+
+    .thumbnail-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .result-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .result-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+
+    .result-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    #save-btn {
+      display: block;
+      width: 100%;
+      margin-top: 14px;
+      background: transparent;
+      color: var(--success);
+      border: 1px solid var(--success);
+      border-radius: var(--radius);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    #save-btn:hover {
+      background: rgba(0, 186, 124, 0.1);
+    }
+
+    /* ── Ad slot ── */
+    #ad-slot {
+      width: 100%;
+      max-width: 560px;
+      margin-top: 32px;
+      text-align: center;
+      /* AdSense code goes here */
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: auto;
+      padding-top: 48px;
+      color: var(--text-muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      body {
+        padding: 32px 12px 64px;
+      }
+
+      .card {
+        padding: 20px 16px;
+      }
+
+      .result-inner {
+        flex-direction: column;
+      }
+
+      .thumbnail-wrap {
+        width: 100%;
+        height: 160px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">X<span>SAVE</span></div>
+    <p class="subtitle">paste a twitter or x link. get your video.</p>
+  </header>
+
+  <div class="card">
+    <div class="input-wrap">
+      <span class="input-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+      </span>
+      <input
+        type="url"
+        id="url-input"
+        placeholder="https://x.com/user/status/..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+
+    <button id="download-btn">
+      <span class="btn-text">Get Video</span>
+    </button>
+
+    <div id="error-msg"></div>
+
+    <div id="result">
+      <div class="result-inner">
+        <div class="thumbnail-wrap">
+          <img id="result-thumb" src="" alt="thumbnail" />
+        </div>
+        <div class="result-meta">
+          <div class="result-label">Ready to save</div>
+          <div class="result-title" id="result-title"></div>
+        </div>
+      </div>
+      <a id="save-btn" href="#" target="_blank" rel="noopener noreferrer">
+        ↓ Save Video
+      </a>
+    </div>
+  </div>
+
+  <!-- AdSense placeholder — paste your AdSense snippet inside this div -->
+  <div id="ad-slot">
+    <!-- AD SLOT: insert Google AdSense code here -->
+  </div>
+
+  <footer>
+    for personal use only &nbsp;·&nbsp; respects original content creators
+  </footer>
+
+  <script>
+    const input     = document.getElementById('url-input');
+    const btn       = document.getElementById('download-btn');
+    const btnText   = btn.querySelector('.btn-text');
+    const errorMsg  = document.getElementById('error-msg');
+    const result    = document.getElementById('result');
+    const thumb     = document.getElementById('result-thumb');
+    const titleEl   = document.getElementById('result-title');
+    const saveBtn   = document.getElementById('save-btn');
+
+    function setLoading(on) {
+      btn.disabled = on;
+      btn.classList.toggle('loading', on);
+      btnText.textContent = on ? 'Fetching stream…' : 'Get Video';
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+      result.style.display = 'none';
+    }
+
+    function clearState() {
+      errorMsg.style.display = 'none';
+      result.style.display = 'none';
+    }
+
+    async function handleDownload() {
+      const url = input.value.trim();
+      if (!url) {
+        showError('Please paste a Twitter / X link first.');
+        return;
+      }
+
+      clearState();
+      setLoading(true);
+
+      try {
+        const res = await fetch('/download', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || data.error) {
+          showError(data.error || 'Something went wrong. Try again.');
+          return;
+        }
+
+        // Populate result
+        if (data.thumbnail) {
+          thumb.src = data.thumbnail;
+          thumb.style.display = 'block';
+        } else {
+          thumb.style.display = 'none';
+        }
+
+        titleEl.textContent = data.title || 'Twitter Video';
+        saveBtn.href = data.url;
+        result.style.display = 'block';
+
+      } catch (err) {
+        showError('Network error — is the server running?');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    btn.addEventListener('click', handleDownload);
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleDownload();
+    });
+
+    // Auto-paste from clipboard on focus if field is empty
+    input.addEventListener('focus', async () => {
+      if (input.value) return;
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text && (text.includes('twitter.com') || text.includes('x.com'))) {
+          input.value = text;
+        }
+      } catch (_) {
+        // clipboard permission denied — ignore
+      }
+    });
+  </script>
+
+</body>
+</html>
