@@ -1,24 +1,31 @@
 import os
+import tempfile
+import threading
 import yt_dlp
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, send_file
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder="static")
 CORS(app)
 
-YDL_OPTS = {
-    "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
+UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/122.0.0.0 Safari/537.36"
+)
+
+# Info-only opts — no download, prefer direct mp4 over HLS
+INFO_OPTS = {
+    "format": "best[ext=mp4]/bestvideo[ext=mp4]+bestaudio[ext=mp4]/best",
     "quiet": True,
     "no_warnings": True,
     "skip_download": True,
-    "http_headers": {
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/122.0.0.0 Safari/537.36"
-        ),
-    },
+    "http_headers": {"User-Agent": UA},
 }
+
+
+def _is_hls(url):
+    return url and (".m3u8" in url or "m3u8" in url)
 
 
 @app.route("/")
@@ -67,47 +74,115 @@ def download():
         return jsonify({"error": "URL cannot be empty"}), 400
 
     try:
-        with yt_dlp.YoutubeDL(YDL_OPTS) as ydl:
+        with yt_dlp.YoutubeDL(INFO_OPTS) as ydl:
             info = ydl.extract_info(url, download=False)
 
         if not info:
             return jsonify({"error": "Could not extract video info"}), 422
 
-        # Resolve direct URL — prefer formats list for best mp4
+        # Pick the best direct mp4 URL — skip HLS manifests
         video_url = None
+        hls_fallback = None
+
         if info.get("formats"):
-            # Walk formats in reverse (highest quality last)
             for fmt in reversed(info["formats"]):
-                if fmt.get("ext") == "mp4" and fmt.get("url"):
-                    video_url = fmt["url"]
+                fmt_url = fmt.get("url", "")
+                if fmt.get("ext") == "mp4" and not _is_hls(fmt_url) and fmt_url:
+                    video_url = fmt_url
                     break
-            # Fallback: any format with a URL
+            # Keep an HLS fallback in case nothing else exists
             if not video_url:
                 for fmt in reversed(info["formats"]):
                     if fmt.get("url"):
-                        video_url = fmt["url"]
-                        break
+                        if _is_hls(fmt["url"]):
+                            hls_fallback = fmt["url"]
+                        else:
+                            video_url = fmt["url"]
+                            break
 
         if not video_url:
-            video_url = info.get("url")
+            top = info.get("url", "")
+            if _is_hls(top):
+                hls_fallback = top
+            else:
+                video_url = top
+
+        title = info.get("title") or info.get("description") or "Twitter Video"
+        thumbnail = info.get("thumbnail") or ""
+
+        # If we only have HLS, tell the frontend to use /convert instead
+        if not video_url and hls_fallback:
+            return jsonify({
+                "url": hls_fallback,
+                "title": title,
+                "thumbnail": thumbnail,
+                "hls": True,
+            })
 
         if not video_url:
             return jsonify({"error": "No downloadable stream found for this tweet"}), 422
 
-        return jsonify({
-            "url": video_url,
-            "title": info.get("title") or info.get("description") or "Twitter Video",
-            "thumbnail": info.get("thumbnail") or "",
-        })
+        return jsonify({"url": video_url, "title": title, "thumbnail": thumbnail, "hls": False})
 
     except yt_dlp.utils.DownloadError as e:
         msg = str(e)
-        # Strip verbose yt-dlp prefix
         if "ERROR:" in msg:
             msg = msg.split("ERROR:")[-1].strip()
         return jsonify({"error": msg}), 422
     except Exception as e:
         return jsonify({"error": "Unexpected error: " + str(e)}), 500
+
+
+@app.route("/convert", methods=["POST"])
+def convert():
+    """Download an HLS stream server-side, remux to mp4, stream to client."""
+    data = request.get_json(silent=True)
+    if not data or not data.get("url"):
+        return jsonify({"error": "Missing URL"}), 400
+
+    source_url = data["url"].strip()
+
+    tmp = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False)
+    tmp_path = tmp.name
+    tmp.close()
+
+    convert_opts = {
+        "format": "best[ext=mp4]/best",
+        "outtmpl": tmp_path,
+        "quiet": True,
+        "no_warnings": True,
+        "http_headers": {"User-Agent": UA},
+        "socket_timeout": 30,
+        "retries": 2,
+        "merge_output_format": "mp4",
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(convert_opts) as ydl:
+            ydl.download([source_url])
+    except Exception as e:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        return jsonify({"error": "Conversion failed: " + str(e)}), 500
+
+    def remove_after_send(path):
+        try:
+            os.unlink(path)
+        except OSError:
+            pass
+
+    response = send_file(
+        tmp_path,
+        mimetype="application/octet-stream",
+        as_attachment=True,
+        download_name="xsave-video.mp4",
+    )
+
+    # Clean up temp file after response is sent
+    threading.Timer(60, remove_after_send, args=[tmp_path]).start()
+    return response
 
 
 if __name__ == "__main__":

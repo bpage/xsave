@@ -247,13 +247,17 @@
       font-weight: 500;
       padding: 12px;
       cursor: pointer;
-      text-decoration: none;
       text-align: center;
-      transition: background 0.15s, color 0.15s;
+      transition: background 0.15s, color 0.15s, opacity 0.15s;
     }
 
-    #save-btn:hover {
+    #save-btn:hover:not(:disabled) {
       background: rgba(0, 186, 124, 0.1);
+    }
+
+    #save-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
     /* ── Ad slot ── */
@@ -356,9 +360,7 @@
           <div class="result-title" id="result-title"></div>
         </div>
       </div>
-      <a id="save-btn" href="#" target="_blank" rel="noopener noreferrer">
-        ↓ Save Video
-      </a>
+      <button id="save-btn">↓ Save Video</button>
     </div>
   </div>
 
@@ -383,14 +385,17 @@
   </footer>
 
   <script>
-    const input     = document.getElementById('url-input');
-    const btn       = document.getElementById('download-btn');
-    const btnText   = btn.querySelector('.btn-text');
-    const errorMsg  = document.getElementById('error-msg');
-    const result    = document.getElementById('result');
-    const thumb     = document.getElementById('result-thumb');
-    const titleEl   = document.getElementById('result-title');
-    const saveBtn   = document.getElementById('save-btn');
+    const input    = document.getElementById('url-input');
+    const btn      = document.getElementById('download-btn');
+    const btnText  = btn.querySelector('.btn-text');
+    const errorMsg = document.getElementById('error-msg');
+    const result   = document.getElementById('result');
+    const thumb    = document.getElementById('result-thumb');
+    const titleEl  = document.getElementById('result-title');
+    const saveBtn  = document.getElementById('save-btn');
+
+    let currentVideoUrl = null;
+    let currentIsHls    = false;
 
     function setLoading(on) {
       btn.disabled = on;
@@ -433,7 +438,6 @@
           return;
         }
 
-        // Populate result
         if (data.thumbnail) {
           thumb.src = data.thumbnail;
           thumb.style.display = 'block';
@@ -442,7 +446,10 @@
         }
 
         titleEl.textContent = data.title || 'Twitter Video';
-        saveBtn.href = data.url;
+        currentVideoUrl = data.url;
+        currentIsHls    = !!data.hls;
+        saveBtn.textContent = '↓ Save Video';
+        saveBtn.disabled = false;
         result.style.display = 'block';
 
       } catch (err) {
@@ -451,6 +458,66 @@
         setLoading(false);
       }
     }
+
+    // Direct mp4 download via blob (forces Save As dialog)
+    async function blobDownload(url) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Preparing download…';
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('fetch failed');
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'xsave-video.mp4';
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+      } catch {
+        // Blob fetch blocked (CORS on CDN) — open in new tab as fallback
+        window.open(url, '_blank', 'noopener');
+      } finally {
+        saveBtn.textContent = '↓ Save Video';
+        saveBtn.disabled = false;
+      }
+    }
+
+    // HLS → mp4 via server-side /convert, then stream to client
+    async function hlsDownload(url) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Converting… this may take a moment';
+      try {
+        const res = await fetch('/convert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          showError(err.error || 'Conversion failed. Try again.');
+          return;
+        }
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'xsave-video.mp4';
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+      } catch {
+        showError('Download failed. Try again.');
+      } finally {
+        saveBtn.textContent = '↓ Save Video';
+        saveBtn.disabled = false;
+      }
+    }
+
+    saveBtn.addEventListener('click', () => {
+      if (!currentVideoUrl) return;
+      if (currentIsHls) {
+        hlsDownload(currentVideoUrl);
+      } else {
+        blobDownload(currentVideoUrl);
+      }
+    });
 
     btn.addEventListener('click', handleDownload);
 
