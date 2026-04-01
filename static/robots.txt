@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-# Replace xsave.pics with your actual domain
 Sitemap: https://xsave.pics/sitemap.xml

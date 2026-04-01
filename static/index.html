@@ -3,324 +3,144 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>XSAVE — Twitter Video Downloader</title>
+  <title>XSAVE — Free X &amp; Twitter Video Downloader (MP4)</title>
+  <meta name="description" content="Download any X or Twitter video free. Works on iPhone, Android, Chrome and Safari. No app needed — just paste your link and save." />
+  <link rel="canonical" href="https://xsave.pics/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://xsave.pics/" />
+  <meta property="og:title" content="XSAVE — Free X &amp; Twitter Video Downloader" />
+  <meta property="og:description" content="Download any X or Twitter video free. Works on iPhone, Android, Chrome and Safari. No app needed — just paste your link and save." />
+  <meta property="og:image" content="https://xsave.pics/static/og.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="XSAVE — Free X &amp; Twitter Video Downloader" />
+  <meta name="twitter:description" content="Download any X or Twitter video free. Works on iPhone, Android, Chrome and Safari." />
+  <meta name="twitter:image" content="https://xsave.pics/static/og.png" />
+
+  <!-- JSON-LD FAQ Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I download a Twitter video on iPhone?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Open the tweet in Safari or Chrome, copy the URL, go to xsave.pics, paste it in the box, and tap Get Video. Tap the Save Video button — if the download doesn't start automatically, tap and hold the button and choose 'Download Linked File'."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does XSAVE work on Safari?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. XSAVE works on Safari on Mac, iPhone, and iPad. On desktop Safari the file downloads directly. On iOS Safari, tap and hold the Save Video button and choose 'Download Linked File' to save to your Files app."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is XSAVE free to use?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, XSAVE is completely free. The site is supported by ads. No account, no signup, no payment required."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What video formats does XSAVE support?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "XSAVE downloads videos as MP4 files, which play on all devices. It automatically selects the best available quality from the original tweet."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I download X videos on Android?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Open the tweet, copy the URL, paste it into XSAVE, and tap Save Video. The MP4 file will download to your device's Downloads folder. Works on Chrome for Android and other mobile browsers."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why won't my video download?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Make sure you're pasting the full URL of a tweet that contains a video (not a photo or text-only tweet). If the tweet is from a private account, XSAVE cannot access it. If you're on iOS Safari, use the tap-and-hold method described above."
+        }
+      }
+    ]
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0a0a;--surface:#141414;--surface-2:#1c1c1c;--border:#2a2a2a;--border-focus:#444;--text:#f0f0f0;--text-muted:#888;--accent:#1d9bf0;--accent-hover:#1a8cd8;--accent-active:#178bbf;--error:#f4212e;--success:#00ba7c;--radius:10px}
+    html,body{height:100%}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.5;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:48px 16px 80px}
+    header{text-align:center;margin-bottom:8px}
+    .logo{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(52px,12vw,80px);letter-spacing:-1px;line-height:1;background:linear-gradient(135deg,#fff 0%,#a0a0a0 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .logo span{-webkit-text-fill-color:var(--accent)}
+    .site-h1{font-size:13px;font-weight:400;color:var(--text-muted);letter-spacing:0.3px;margin:6px 0 28px;text-align:center}
+    .card{width:100%;max-width:560px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 24px}
+    .input-wrap{position:relative;margin-bottom:12px}
+    .input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;display:flex;align-items:center}
+    #url-input{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:13px 14px 13px 40px;outline:none;transition:border-color .15s,box-shadow .15s}
+    #url-input::placeholder{color:var(--text-muted)}
+    #url-input:focus{border-color:var(--border-focus);box-shadow:0 0 0 3px rgba(29,155,240,.12)}
+    #download-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:15px;font-weight:500;padding:13px;cursor:pointer;transition:background .15s,transform .1s,opacity .15s;position:relative;overflow:hidden}
+    #download-btn:hover:not(:disabled){background:var(--accent-hover)}
+    #download-btn:active:not(:disabled){background:var(--accent-active);transform:scale(.99)}
+    #download-btn:disabled{opacity:.7;cursor:not-allowed}
+    #download-btn.loading .btn-text{animation:pulse 1.2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+    #error-msg{display:none;color:var(--error);font-size:13px;margin-top:10px;padding:10px 12px;background:rgba(244,33,46,.08);border:1px solid rgba(244,33,46,.2);border-radius:8px}
+    #result{display:none;margin-top:20px;border-top:1px solid var(--border);padding-top:20px}
+    .result-inner{display:flex;gap:14px;align-items:flex-start}
+    .thumbnail-wrap{flex-shrink:0;width:100px;height:68px;border-radius:8px;overflow:hidden;background:var(--surface-2);border:1px solid var(--border)}
+    .thumbnail-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+    .result-meta{flex:1;min-width:0}
+    .result-title{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+    .result-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px}
+    #save-btn{display:block;width:100%;margin-top:14px;background:transparent;color:var(--success);border:1px solid var(--success);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:15px;font-weight:500;padding:12px;cursor:pointer;text-align:center;text-decoration:none;transition:background .15s,color .15s,opacity .15s}
+    #save-btn:hover{background:rgba(0,186,124,.1)}
+    #ios-tip{margin-top:8px;font-size:12px;color:#666;text-align:center;min-height:16px}
+    #ad-slot{width:100%;max-width:560px;margin-top:32px;text-align:center}
 
-    :root {
-      --bg: #0a0a0a;
-      --surface: #141414;
-      --surface-2: #1c1c1c;
-      --border: #2a2a2a;
-      --border-focus: #444;
-      --text: #f0f0f0;
-      --text-muted: #888;
-      --accent: #1d9bf0;
-      --accent-hover: #1a8cd8;
-      --accent-active: #178bbf;
-      --error: #f4212e;
-      --success: #00ba7c;
-      --radius: 10px;
-    }
-
-    html, body {
-      height: 100%;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Inter', system-ui, sans-serif;
-      font-size: 15px;
-      line-height: 1.5;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 48px 16px 80px;
-    }
-
-    /* ── Header ── */
-    header {
-      text-align: center;
-      margin-bottom: 36px;
-    }
-
-    .logo {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 800;
-      font-size: clamp(52px, 12vw, 80px);
-      letter-spacing: -1px;
-      color: var(--text);
-      line-height: 1;
-      /* subtle gradient shine */
-      background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .logo span {
-      color: var(--accent);
-      -webkit-text-fill-color: var(--accent);
-    }
-
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 14px;
-      margin-top: 8px;
-      letter-spacing: 0.3px;
-    }
-
-    /* ── Card ── */
-    .card {
-      width: 100%;
-      max-width: 560px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px 24px;
-    }
-
-    /* ── Input ── */
-    .input-wrap {
-      position: relative;
-      margin-bottom: 12px;
-    }
-
-    .input-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      pointer-events: none;
-      display: flex;
-      align-items: center;
-    }
-
-    #url-input {
-      width: 100%;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      padding: 13px 14px 13px 40px;
-      outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-
-    #url-input::placeholder {
-      color: var(--text-muted);
-    }
-
-    #url-input:focus {
-      border-color: var(--border-focus);
-      box-shadow: 0 0 0 3px rgba(29, 155, 240, 0.12);
-    }
-
-    /* ── Button ── */
-    #download-btn {
-      width: 100%;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius);
-      font-family: 'Inter', sans-serif;
-      font-size: 15px;
-      font-weight: 500;
-      padding: 13px;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.1s, opacity 0.15s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    #download-btn:hover:not(:disabled) {
-      background: var(--accent-hover);
-    }
-
-    #download-btn:active:not(:disabled) {
-      background: var(--accent-active);
-      transform: scale(0.99);
-    }
-
-    #download-btn:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
-    /* Loading pulse on button text */
-    #download-btn.loading .btn-text {
-      animation: pulse 1.2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0.45; }
-    }
-
-    /* ── Error ── */
-    #error-msg {
-      display: none;
-      color: var(--error);
-      font-size: 13px;
-      margin-top: 10px;
-      padding: 10px 12px;
-      background: rgba(244, 33, 46, 0.08);
-      border: 1px solid rgba(244, 33, 46, 0.2);
-      border-radius: 8px;
-    }
-
-    /* ── Result ── */
-    #result {
-      display: none;
-      margin-top: 20px;
-      border-top: 1px solid var(--border);
-      padding-top: 20px;
-    }
-
-    .result-inner {
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-    }
-
-    .thumbnail-wrap {
-      flex-shrink: 0;
-      width: 100px;
-      height: 68px;
-      border-radius: 8px;
-      overflow: hidden;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-    }
-
-    .thumbnail-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .result-meta {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .result-title {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-bottom: 4px;
-    }
-
-    .result-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-    }
-
-    #save-btn {
-      display: block;
-      width: 100%;
-      margin-top: 14px;
-      background: transparent;
-      color: var(--success);
-      border: 1px solid var(--success);
-      border-radius: var(--radius);
-      font-family: 'Inter', sans-serif;
-      font-size: 15px;
-      font-weight: 500;
-      padding: 12px;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      transition: background 0.15s, color 0.15s, opacity 0.15s;
-    }
-
-    #save-btn:hover {
-      background: rgba(0, 186, 124, 0.1);
-    }
-
-    #ios-tip {
-      margin-top: 8px;
-      font-size: 12px;
-      color: #666;
-      text-align: center;
-      min-height: 16px;
-    }
-
-    /* ── Ad slot ── */
-    #ad-slot {
-      width: 100%;
-      max-width: 560px;
-      margin-top: 32px;
-      text-align: center;
-      /* AdSense code goes here */
-    }
+    /* ── FAQ ── */
+    .faq{width:100%;max-width:560px;margin-top:40px}
+    .faq-heading{font-size:11px;font-weight:500;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;text-align:center}
+    .faq-item{border-bottom:1px solid #1a1a1a}
+    .faq-item:first-of-type{border-top:1px solid #1a1a1a}
+    .faq-q{width:100%;background:none;border:none;color:#aaa;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;text-align:left;padding:14px 4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;transition:color .15s}
+    .faq-q:hover{color:var(--text)}
+    .faq-q[aria-expanded="true"]{color:var(--text)}
+    .faq-icon{flex-shrink:0;font-size:18px;line-height:1;color:#444;transition:transform .2s}
+    .faq-q[aria-expanded="true"] .faq-icon{transform:rotate(45deg);color:#666}
+    .faq-a{display:none;font-size:13px;color:#777;line-height:1.65;padding:0 4px 14px}
+    .faq-a.open{display:block}
 
     /* ── Footer ── */
-    footer {
-      margin-top: auto;
-      padding-top: 48px;
-      color: #444;
-      font-size: 12px;
-      text-align: center;
-    }
-
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-
-    .footer-links a {
-      color: #444;
-      text-decoration: none;
-    }
-
-    .footer-links a:hover {
-      color: var(--text-muted);
-    }
-
-    .footer-links span {
-      color: #333;
-    }
+    footer{margin-top:auto;padding-top:48px;color:#444;font-size:12px;text-align:center}
+    .footer-links{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+    .footer-links a{color:#444;text-decoration:none}
+    .footer-links a:hover{color:var(--text-muted)}
+    .footer-links span{color:#333}
 
     /* ── Responsive ── */
-    @media (max-width: 480px) {
-      body {
-        padding: 32px 12px 64px;
-      }
-
-      .card {
-        padding: 20px 16px;
-      }
-
-      .result-inner {
-        flex-direction: column;
-      }
-
-      .thumbnail-wrap {
-        width: 100%;
-        height: 160px;
-      }
+    @media(max-width:480px){
+      body{padding:32px 12px 64px}
+      .card{padding:20px 16px}
+      .result-inner{flex-direction:column}
+      .thumbnail-wrap{width:100%;height:160px}
     }
   </style>
 </head>
@@ -328,8 +148,8 @@
 
   <header>
     <div class="logo">X<span>SAVE</span></div>
-    <p class="subtitle">paste a twitter or x link. get your video.</p>
   </header>
+  <h1 class="site-h1">Free X &amp; Twitter Video Downloader — paste a link, save the video.</h1>
 
   <div class="card">
     <div class="input-wrap">
@@ -357,7 +177,7 @@
     <div id="result">
       <div class="result-inner">
         <div class="thumbnail-wrap">
-          <img id="result-thumb" src="" alt="thumbnail" />
+          <img id="result-thumb" src="" alt="video thumbnail" loading="lazy" />
         </div>
         <div class="result-meta">
           <div class="result-label">Ready to save</div>
@@ -373,6 +193,60 @@
   <div id="ad-slot">
     <!-- AD SLOT: insert Google AdSense code here -->
   </div>
+
+  <!-- ── FAQ ── -->
+  <section class="faq" aria-label="Frequently asked questions">
+    <p class="faq-heading">FAQ</p>
+
+    <div class="faq-item">
+      <button class="faq-q" aria-expanded="false">
+        How do I download a Twitter video on iPhone?
+        <span class="faq-icon" aria-hidden="true">+</span>
+      </button>
+      <div class="faq-a">Open the tweet in Safari or Chrome, copy the URL, come to xsave.pics, paste it in the box, and tap <strong>Get Video</strong>. Tap <strong>Save Video</strong> — if the download doesn't trigger automatically, tap and hold the button and choose <em>Download Linked File</em> to save it to your Files app.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" aria-expanded="false">
+        Does XSAVE work on Safari?
+        <span class="faq-icon" aria-hidden="true">+</span>
+      </button>
+      <div class="faq-a">Yes. On desktop Safari the file downloads directly when you click Save Video. On iOS Safari, tap and hold the Save Video button and select <em>Download Linked File</em>. The video saves to your Files app and you can move it to Photos from there.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" aria-expanded="false">
+        Is XSAVE free to use?
+        <span class="faq-icon" aria-hidden="true">+</span>
+      </button>
+      <div class="faq-a">Yes, completely free. No account required, no signup, no credit card. The site is supported by display ads which keep it running at no cost to you.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" aria-expanded="false">
+        What video formats does XSAVE support?
+        <span class="faq-icon" aria-hidden="true">+</span>
+      </button>
+      <div class="faq-a">XSAVE saves videos as MP4, which plays on every device — iPhone, Android, Mac, Windows, and smart TVs. It automatically picks the highest quality stream available in the original tweet.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" aria-expanded="false">
+        Can I download X videos on Android?
+        <span class="faq-icon" aria-hidden="true">+</span>
+      </button>
+      <div class="faq-a">Yes. Copy the tweet URL, paste it into XSAVE, and tap Save Video. The MP4 downloads to your Downloads folder. Works on Chrome for Android, Firefox, and other mobile browsers.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" aria-expanded="false">
+        Why won't my video download?
+        <span class="faq-icon" aria-hidden="true">+</span>
+      </button>
+      <div class="faq-a">Check that you've pasted the full URL of a tweet containing a video (not a photo or text-only post). Videos from private accounts can't be accessed. On iOS Safari, try the tap-and-hold method. If a video still fails, the tweet may use a format not currently supported.</div>
+    </div>
+
+  </section>
 
   <footer>
     <nav class="footer-links">
@@ -458,7 +332,6 @@
         currentVideoUrl = data.url;
         currentIsHls    = !!data.hls;
 
-        // Point the anchor at our proxy so it works as a plain link too
         const proxyUrl = '/proxy-download?url=' + encodeURIComponent(currentVideoUrl);
         saveBtn.href = currentIsHls ? '#' : proxyUrl;
         saveBtn.textContent = '↓ Save Video';
@@ -475,26 +348,20 @@
       if (!currentVideoUrl) { e.preventDefault(); return; }
 
       if (currentIsHls) {
-        // HLS: must go through /convert server-side
         e.preventDefault();
         hlsDownload(currentVideoUrl);
         return;
       }
 
-      // For direct mp4: use proxy route — works on Safari, Chrome, Brave, Firefox
-      // Let the anchor's href do the work (already set above), but on iOS show the tip
       if (isIOS) {
         e.preventDefault();
         window.location.href = '/proxy-download?url=' + encodeURIComponent(currentVideoUrl);
-        // Show tap-and-hold tip after 2s if no download dialog appeared
         setTimeout(() => {
           iosTip.textContent = 'Tap and hold the button → Download Linked File';
         }, 2000);
       }
-      // Non-iOS: let the href navigate naturally — browser gets attachment headers
     });
 
-    // HLS → mp4 via server-side /convert, stream to client
     async function hlsDownload(url) {
       saveBtn.textContent = 'Converting… this may take a moment';
       try {
@@ -527,7 +394,6 @@
       if (e.key === 'Enter') handleDownload();
     });
 
-    // Auto-paste from clipboard on focus if field is empty
     input.addEventListener('focus', async () => {
       if (input.value) return;
       try {
@@ -535,9 +401,16 @@
         if (text && (text.includes('twitter.com') || text.includes('x.com'))) {
           input.value = text;
         }
-      } catch (_) {
-        // clipboard permission denied — ignore
-      }
+      } catch (_) {}
+    });
+
+    // FAQ accordion
+    document.querySelectorAll('.faq-q').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', !expanded);
+        btn.nextElementSibling.classList.toggle('open', !expanded);
+      });
     });
   </script>
 
