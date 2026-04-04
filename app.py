@@ -64,6 +64,11 @@ def robots():
     return send_from_directory("static", "robots.txt", mimetype="text/plain")
 
 
+@app.route("/ads.txt")
+def ads_txt():
+    return send_from_directory("static", "ads.txt")
+
+
 @app.route("/download", methods=["POST"])
 def download():
     data = request.get_json(silent=True)
