@@ -22,6 +22,8 @@ INFO_OPTS = {
     "no_warnings": True,
     "skip_download": True,
     "http_headers": {"User-Agent": UA},
+    "cookiefile": None,
+    "extractor_args": {"twitter": {"api": ["syndication"]}},
 }
 
 
@@ -161,6 +163,8 @@ def convert():
         "socket_timeout": 30,
         "retries": 2,
         "merge_output_format": "mp4",
+        "cookiefile": None,
+        "extractor_args": {"twitter": {"api": ["syndication"]}},
     }
 
     try:
