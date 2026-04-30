@@ -90,7 +90,8 @@
     header{text-align:center;margin-bottom:8px}
     .logo{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(52px,12vw,80px);letter-spacing:-1px;line-height:1;background:linear-gradient(135deg,#fff 0%,#a0a0a0 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .logo span{-webkit-text-fill-color:var(--accent)}
-    .site-h1{font-size:13px;font-weight:400;color:var(--text-muted);letter-spacing:0.3px;margin:6px 0 28px;text-align:center}
+    .site-h1{font-size:13px;font-weight:400;color:var(--text-muted);letter-spacing:0.3px;margin:6px 0 16px;text-align:center}
+    .intro{max-width:560px;margin:0 auto 28px;font-size:14px;line-height:1.65;color:#999;text-align:center;padding:0 4px}
     .card{width:100%;max-width:560px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 24px}
     .input-wrap{position:relative;margin-bottom:12px}
     .input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;display:flex;align-items:center}
@@ -120,13 +121,14 @@
     .faq-heading{font-size:11px;font-weight:500;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;text-align:center}
     .faq-item{border-bottom:1px solid #1a1a1a}
     .faq-item:first-of-type{border-top:1px solid #1a1a1a}
-    .faq-q{width:100%;background:none;border:none;color:#aaa;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;text-align:left;padding:14px 4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;transition:color .15s}
-    .faq-q:hover{color:var(--text)}
-    .faq-q[aria-expanded="true"]{color:var(--text)}
+    .faq-item summary{list-style:none;color:#aaa;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;padding:14px 4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;transition:color .15s}
+    .faq-item summary::-webkit-details-marker{display:none}
+    .faq-item summary::marker{content:""}
+    .faq-item summary:hover{color:var(--text)}
+    .faq-item[open] summary{color:var(--text)}
     .faq-icon{flex-shrink:0;font-size:18px;line-height:1;color:#444;transition:transform .2s}
-    .faq-q[aria-expanded="true"] .faq-icon{transform:rotate(45deg);color:#666}
-    .faq-a{display:none;font-size:13px;color:#777;line-height:1.65;padding:0 4px 14px}
-    .faq-a.open{display:block}
+    .faq-item[open] .faq-icon{transform:rotate(45deg);color:#666}
+    .faq-a{font-size:13px;color:#777;line-height:1.65;padding:0 4px 14px}
 
     /* ── Footer ── */
     footer{margin-top:auto;padding:48px 0 56px;color:#444;font-size:12px;text-align:center}
@@ -154,6 +156,8 @@
     <div class="logo">X<span>SAVE</span></div>
   </header>
   <h1 class="site-h1">Free X &amp; Twitter Video Downloader — paste a link, save the video.</h1>
+
+  <p class="intro">XSAVE is a free online tool that lets you download videos from X (formerly Twitter) as MP4 files. Paste any tweet URL containing a video and save it to your iPhone, Android, Mac, or Windows device — no app, no signup, no watermark. We support both regular tweet videos and HLS streams, automatically picking the best available quality. Built for personal use to help you keep videos you've already discovered on X.</p>
 
   <div class="card">
     <div class="input-wrap">
@@ -197,53 +201,53 @@
   <section class="faq" aria-label="Frequently asked questions">
     <p class="faq-heading">FAQ</p>
 
-    <div class="faq-item">
-      <button class="faq-q" aria-expanded="false">
+    <details class="faq-item">
+      <summary>
         How do I download a Twitter video on iPhone?
         <span class="faq-icon" aria-hidden="true">+</span>
-      </button>
+      </summary>
       <div class="faq-a">Open the tweet in Safari or Chrome, copy the URL, come to xsave.pics, paste it in the box, and tap <strong>Get Video</strong>. Tap <strong>Save Video</strong> — if the download doesn't trigger automatically, tap and hold the button and choose <em>Download Linked File</em> to save it to your Files app.</div>
-    </div>
+    </details>
 
-    <div class="faq-item">
-      <button class="faq-q" aria-expanded="false">
+    <details class="faq-item">
+      <summary>
         Does XSAVE work on Safari?
         <span class="faq-icon" aria-hidden="true">+</span>
-      </button>
+      </summary>
       <div class="faq-a">Yes. On desktop Safari the file downloads directly when you click Save Video. On iOS Safari, tap and hold the Save Video button and select <em>Download Linked File</em>. The video saves to your Files app and you can move it to Photos from there.</div>
-    </div>
+    </details>
 
-    <div class="faq-item">
-      <button class="faq-q" aria-expanded="false">
+    <details class="faq-item">
+      <summary>
         Is XSAVE free to use?
         <span class="faq-icon" aria-hidden="true">+</span>
-      </button>
+      </summary>
       <div class="faq-a">Yes, completely free. No account required, no signup, no credit card. The site is supported by display ads which keep it running at no cost to you.</div>
-    </div>
+    </details>
 
-    <div class="faq-item">
-      <button class="faq-q" aria-expanded="false">
+    <details class="faq-item">
+      <summary>
         What video formats does XSAVE support?
         <span class="faq-icon" aria-hidden="true">+</span>
-      </button>
+      </summary>
       <div class="faq-a">XSAVE saves videos as MP4, which plays on every device — iPhone, Android, Mac, Windows, and smart TVs. It automatically picks the highest quality stream available in the original tweet.</div>
-    </div>
+    </details>
 
-    <div class="faq-item">
-      <button class="faq-q" aria-expanded="false">
+    <details class="faq-item">
+      <summary>
         Can I download X videos on Android?
         <span class="faq-icon" aria-hidden="true">+</span>
-      </button>
+      </summary>
       <div class="faq-a">Yes. Copy the tweet URL, paste it into XSAVE, and tap Save Video. The MP4 downloads to your Downloads folder. Works on Chrome for Android, Firefox, and other mobile browsers.</div>
-    </div>
+    </details>
 
-    <div class="faq-item">
-      <button class="faq-q" aria-expanded="false">
+    <details class="faq-item">
+      <summary>
         Why won't my video download?
         <span class="faq-icon" aria-hidden="true">+</span>
-      </button>
+      </summary>
       <div class="faq-a">Check that you've pasted the full URL of a tweet containing a video (not a photo or text-only post). Videos from private accounts can't be accessed. On iOS Safari, try the tap-and-hold method. If a video still fails, the tweet may use a format not currently supported.</div>
-    </div>
+    </details>
 
   </section>
 
@@ -404,14 +408,6 @@
       } catch (_) {}
     });
 
-    // FAQ accordion
-    document.querySelectorAll('.faq-q').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const expanded = btn.getAttribute('aria-expanded') === 'true';
-        btn.setAttribute('aria-expanded', !expanded);
-        btn.nextElementSibling.classList.toggle('open', !expanded);
-      });
-    });
   </script>
 
 </body>
